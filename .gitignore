@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 provider.log
+*.pub
+iotueli
+key
+*DESKTOP-CHOQ88G*
