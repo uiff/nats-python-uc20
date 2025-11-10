@@ -73,7 +73,3 @@ Alle verbindungs- und credentialspezifischen Angaben liegen **nur** in `src/iotu
 - **Self-signed TLS** – Die Skripte deaktivieren die Zertifikatsprüfung (`verify=False`). Für produktive Umgebungen sollte ein echtes Zertifikat hinterlegt werden.
 
 Viel Erfolg! Änderungen an Konfiguration oder Variablen einfach in den jeweiligen Dateien anpassen und den Provider neu starten.
-
-## Node.js Sample
-
-Im Unterordner [`nats-node`](nats-node/README.md) findest du ein minimalistisches Node.js-Beispiel (Provider & Consumer auf JSON-Basis). Es nutzt dieselben OAuth-Credentials und NATS-Verbindungsdaten wie das Python-Sample, benötigt aber nur `npm install`. Ideal, wenn du deine eigene JavaScript-Anwendung gegen den u-OS Data Hub testen möchtest.
