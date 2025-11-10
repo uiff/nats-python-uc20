@@ -6,3 +6,6 @@ provider.log
 iotueli
 key
 *DESKTOP-CHOQ88G*
+node_modules/
+package-lock.json
+nats-node/.env
