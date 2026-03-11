@@ -115,7 +115,7 @@ def parse_args():
     return parser.parse_args()
 
 
-async def open_connection(client_suffix: str) -> NatsConnection:
+async def open_connection(client_suffix: str = None) -> NatsConnection:
     oauth = OAuthCredentials(
         client_name=CLIENT_NAME,
         client_id=CLIENT_ID,
@@ -124,10 +124,14 @@ async def open_connection(client_suffix: str) -> NatsConnection:
         scope="hub.variables.readwrite",
     )
     token = await request_token(oauth)
+    client_name = f"{CLIENT_NAME}"
+    if client_suffix:
+        client_name = (f"{CLIENT_NAME}-{client_suffix}",)
+
     conn = NatsConnection(
         host=HOST,
         port=PORT,
-        client_name=f"{CLIENT_NAME}-{client_suffix}",
+        client_name=client_name,
         token=token,
     )
     await conn.connect()
@@ -135,7 +139,9 @@ async def open_connection(client_suffix: str) -> NatsConnection:
 
 
 def _decode_provider_list(payload: bytes) -> list[str]:
-    response = ReadProvidersQueryResponse.GetRootAsReadProvidersQueryResponse(payload, 0)
+    response = ReadProvidersQueryResponse.GetRootAsReadProvidersQueryResponse(
+        payload, 0
+    )
     provider_list = response.Providers()
     if provider_list is None:
         return []
@@ -158,7 +164,9 @@ async def list_providers(conn: NatsConnection) -> None:
         print(f"- {pid}")
 
 
-def _decode_definition_models(definition) -> tuple[list[VariableDefinitionModel], dict[int, dict]]:
+def _decode_definition_models(
+    definition,
+) -> tuple[list[VariableDefinitionModel], dict[int, dict]]:
     variables: list[VariableDefinitionModel] = []
     info: dict[int, dict] = {}
     if definition is None or definition.VariableDefinitionsIsNone():
@@ -199,9 +207,7 @@ def _decode_definition_models(definition) -> tuple[list[VariableDefinitionModel]
 
 async def fetch_definition(conn: NatsConnection, provider_id: str):
     payload = build_read_provider_definition_query()
-    msg = await conn.request(
-        registry_provider_query(provider_id), payload, timeout=2.0
-    )
+    msg = await conn.request(registry_provider_query(provider_id), payload, timeout=2.0)
     response = ReadProviderDefinitionQueryResponse.GetRootAsReadProviderDefinitionQueryResponse(
         msg.data, 0
     )
@@ -333,7 +339,9 @@ def _convert_value(model: VariableDefinitionModel, value: str):
         if value.lower() in {"false", "0", "off", "no"}:
             return False
         raise ValueError("Boolean-Wert bitte als true/false oder 1/0 angeben.")
-    raise ValueError(f"Datentyp {model.data_type} wird für Schreibbefehle nicht unterstützt.")
+    raise ValueError(
+        f"Datentyp {model.data_type} wird für Schreibbefehle nicht unterstützt."
+    )
 
 
 async def write_value(
@@ -353,7 +361,9 @@ async def write_value(
                 selected = entry["model"]
                 break
         if selected is None:
-            raise RuntimeError(f"Key '{key}' nicht gefunden oder nicht unterstützter Typ.")
+            raise RuntimeError(
+                f"Key '{key}' nicht gefunden oder nicht unterstützter Typ."
+            )
     elif var_id is not None:
         entry = info.get(var_id)
         if entry:
@@ -369,11 +379,11 @@ async def write_value(
         value=converted_value,
         timestamp_ns=time.time_ns(),
     )
-    payload = build_write_variables_command([selected], [state])
-    await conn.publish(write_variables_command(provider_id), payload)
-    print(
-        f"Befehl gesendet: {selected.key} (ID {selected.id}) <- {converted_value!r}"
+    payload = build_write_variables_command(
+        [selected], [state], fingerprint=definition.Fingerprint()
     )
+    await conn.publish(write_variables_command(provider_id), payload)
+    print(f"Befehl gesendet: {selected.key} (ID {selected.id}) <- {converted_value!r}")
     # Optional Feedback durch erneutes Lesen
     await asyncio.sleep(0.2)
     await read_values(conn, provider_id, selected.key, None)
@@ -381,7 +391,8 @@ async def write_value(
 
 async def main_async():
     args = parse_args()
-    conn = await open_connection(client_suffix="cli")
+    # Suffix kann hier gesetzt werden mit open_connection(client_suffix="cli")
+    conn = await open_connection()
     try:
         if args.command == "list-providers":
             await list_providers(conn)

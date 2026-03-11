@@ -5,7 +5,12 @@ from typing import Iterable, Sequence, Tuple
 
 from flatbuffers import Builder
 
-from .models import VariableDefinitionModel, VariableStateModel, VariableAccess, VariableType
+from .models import (
+    VariableDefinitionModel,
+    VariableStateModel,
+    VariableAccess,
+    VariableType,
+)
 
 from weidmueller.ucontrol.hub.ProviderDefinitionChangedEvent import (
     ProviderDefinitionChangedEventT,
@@ -19,18 +24,25 @@ from weidmueller.ucontrol.hub.VariableDataType import VariableDataType
 from weidmueller.ucontrol.hub.Timestamp import TimestampT
 from weidmueller.ucontrol.hub.VariablesChangedEvent import VariablesChangedEventT
 from weidmueller.ucontrol.hub.VariableList import VariableListT
-from weidmueller.ucontrol.hub.ReadVariablesQueryResponse import ReadVariablesQueryResponseT
+from weidmueller.ucontrol.hub.ReadVariablesQueryResponse import (
+    ReadVariablesQueryResponseT,
+)
 from weidmueller.ucontrol.hub.VariableValue import VariableValue
 from weidmueller.ucontrol.hub.VariableValueInt64 import VariableValueInt64T
 from weidmueller.ucontrol.hub.VariableValueFloat64 import VariableValueFloat64T
 from weidmueller.ucontrol.hub.VariableValueString import VariableValueStringT
 from weidmueller.ucontrol.hub.VariableValueBoolean import VariableValueBooleanT
-from weidmueller.ucontrol.hub.ReadVariablesQueryRequest import ReadVariablesQueryRequestT
-from weidmueller.ucontrol.hub.ReadProvidersQueryRequest import ReadProvidersQueryRequestT
+from weidmueller.ucontrol.hub.ReadVariablesQueryRequest import (
+    ReadVariablesQueryRequestT,
+)
+from weidmueller.ucontrol.hub.ReadProvidersQueryRequest import (
+    ReadProvidersQueryRequestT,
+)
 from weidmueller.ucontrol.hub.ReadProviderDefinitionQueryRequest import (
     ReadProviderDefinitionQueryRequestT,
 )
 from weidmueller.ucontrol.hub.WriteVariablesCommand import WriteVariablesCommandT
+
 
 def _timestamp_from_state(state: VariableStateModel) -> TimestampT:
     ts = TimestampT()
@@ -206,8 +218,9 @@ def build_read_provider_definition_query() -> bytes:
 def build_write_variables_command(
     variables: Sequence[VariableDefinitionModel],
     states: Iterable[VariableStateModel],
+    fingerprint: int = 0,
 ) -> bytes:
-    var_list = _build_variable_list(variables, states, fingerprint=0)
+    var_list = _build_variable_list(variables, states, fingerprint)
     command = WriteVariablesCommandT()
     command.variables = var_list
     builder = Builder(256)

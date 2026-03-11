@@ -1,11 +1,67 @@
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
+venv/
+env/
+ENV/
+.pip-wheel-metadata/
+
+# Installer and build artifacts
+build/
+dist/
+*.egg-info/
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Logs
+*.log
 provider.log
+
+# Environment and secret files
+.env
+.env.*
+.env.local
+.envrc
+nats-node/.env
+*.pem
+*.key
 *.pub
-iotueli
+secrets.json
 key
-*DESKTOP-CHOQ88G*
+iotueli
+
+# Node.js
 node_modules/
 package-lock.json
-nats-node/.env
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+*DESKTOP-CHOQ88G*
+
+# Docker / container
+*.env
+
+# Local overrides
+.env.local
+.envrc
+
+# Misc local files
+npm-debug.log
